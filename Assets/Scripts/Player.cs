@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-internal enum Player
+public enum Player
 {
-    Player1, Player2
+    Player, Enemy
 }

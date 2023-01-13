@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 public class PositionEventArgs : EventArgs
@@ -22,6 +19,7 @@ public class BoardView : MonoBehaviour
     private List<Position> _tilePositons = new List<Position>();
     public List<Position> TilePositions => _tilePositons;
 
+    //updates which positions are active
     public List<Position> SetActivePosition
     {
         set
@@ -39,8 +37,25 @@ public class BoardView : MonoBehaviour
         }
     }
 
+    //adds the pieces and tiles to their respective dictionaries
+    private void OnEnable()
+    {
+        var positionViews = GetComponentsInChildren<PositionView>();
+        foreach (var positionView in positionViews)
+        {
+            _positionViews.Add(positionView.HexPosition, positionView);
+            _tilePositons.Add(positionView.HexPosition);
+        }
+    }
+
     internal void ChildClicked(PositionView positionView)
     {
-        throw new NotImplementedException();
+        OnPositionClicked(new PositionEventArgs(positionView.HexPosition));
+    }
+
+    protected virtual void OnPositionClicked(PositionEventArgs positionEventArgs)
+    {
+        var handler = PositionClicked;
+        handler.Invoke(this, positionEventArgs);
     }
 }

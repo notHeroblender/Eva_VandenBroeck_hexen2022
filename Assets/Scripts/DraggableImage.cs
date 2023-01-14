@@ -15,7 +15,7 @@ public class DraggableImage : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
     [SerializeField] private Cards _type;
     private Cards Type => _type;
-
+    public bool IsPlayed = false;
 
     //when holding a card, make a copy of it and move that to where the mouse is
     public void OnBeginDrag(PointerEventData eventData)
@@ -40,22 +40,37 @@ public class DraggableImage : MonoBehaviour, IDragHandler, IBeginDragHandler, IE
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = eventData.position;    //location of mouse
+        transform.position = eventData.position;    //location of mouse relative to eventsystem
+
+        Ray ray = Camera.main.ScreenPointToRay(eventData.position);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 100) && hit.collider.tag == "Tile")
+        {
+            PositionView posView = hit.transform.gameObject.GetComponent<PositionView>();
+            GameEngine.SetHighlights(posView.HexPosition, Type, _validPositions, _validPostionGroups);
+        }
+        else
+            Destroy(_copy);
+
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        Ray Ray = Camera.main.ScreenPointToRay(eventData.position);
+        Ray ray = Camera.main.ScreenPointToRay(eventData.position);
+        RaycastHit hit;
 
-        if (Physics.Raycast(Ray, 100, _mask))
+        if (Physics.Raycast(ray, out hit, 100) && hit.collider.tag == "Tile")
         {
-            Destroy(this.gameObject);
+            PositionView posView = hit.transform.gameObject.GetComponent<PositionView>();
+            Destroy(_copy);
+            IsPlayed = true;
+            posView.OnPointerClick(eventData);
         }
         else
-        {
-            this.transform.position = _copy.transform.position;
-        }
-        Destroy(_copy);
+            Destroy(_copy);
+
+        GameEngine.SetActiveTiles(new List<Position>());
     }
     private void ValidGroupsToValidPositions()
     {

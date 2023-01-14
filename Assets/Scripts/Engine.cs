@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Engine
 {
@@ -63,5 +64,54 @@ public class Engine
             return MoveSetCollection.GetValidTilesForCones(_player, _board);
         }
         return null;
+    }
+
+    internal void SetActiveTiles(List<Position> positions)
+    {
+        _boardView.SetActivePosition = positions;
+    }
+
+    internal void SetHighlights(Position hexPosition, Cards type, List<Position> validPositions, List<List<Position>> validPositionGroups)
+    {
+        switch (type)
+        {
+            case Cards.Teleport:
+                if (validPositions.Contains(hexPosition))
+                {
+                    List<Position> positions = new List<Position>();
+
+                    positions.Add(hexPosition);
+                    SetActiveTiles(positions);
+                }
+                break;
+
+            case Cards.Shoot:
+            case Cards.Swipe:
+            case Cards.Push:
+                if (!validPositions.Contains(hexPosition))
+                {
+                    SetActiveTiles(validPositions);
+                }
+                else
+                {
+                    foreach (List<Position> positions in validPositionGroups)
+                    {
+                        if (positions.Count == 0) continue;
+
+                        if ((type == Cards.Shoot && positions.Contains(hexPosition)) || 
+                            (type == Cards.Swipe && positions[0] == hexPosition) || 
+                            (type == Cards.Push && positions[0] == hexPosition))
+                        {
+                            SetActiveTiles(positions);
+                            _selectedPositions = positions;
+                            break;
+                        }
+                    }
+                }
+                break;
+            default:
+                _selectedPositions = new List<Position>();
+                break;
+        }
     }
 }

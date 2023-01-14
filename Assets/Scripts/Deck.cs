@@ -9,6 +9,7 @@ public class Deck : MonoBehaviour
     [SerializeField] private int _handSize = 5;
     [SerializeField] private GameObject[] _cards;
     [SerializeField] private GameObject[] _cardPrefabs;
+    private Vector3 startPosition;
 
     public void CardSetup(Engine engine)
     {
@@ -27,6 +28,33 @@ public class Deck : MonoBehaviour
     {
         List<GameObject> temp = new List<GameObject>(_cards);
 
+        Vector3 startPosition = GetStartPosition(temp, transform.position);
 
+        for (int i = 0; i < temp.Count; i++)
+        {
+            GameObject card = temp[i];
+            if (card.GetComponent<DraggableImage>().IsPlayed)
+            {
+                temp.RemoveAt(i);
+                card.SetActive(false);
+            }
+        }
+    }
+
+    //card placement
+    private Vector3 GetStartPosition(List<GameObject> temp, Vector3 position)
+    {
+        if (temp.Count >= 5)
+            startPosition = transform.position + new Vector3(-120, 0, 0);
+        else if (temp.Count == 4)
+            startPosition = transform.position + new Vector3(-90, 0, 0);
+        else if (temp.Count == 3)
+            startPosition = transform.position + new Vector3(-60, 0, 0);
+        else if (temp.Count == 2)
+            startPosition = transform.position + new Vector3(-30, 0, 0);
+        else if (temp.Count == 1)
+            startPosition = transform.position;
+
+        return startPosition;
     }
 }

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -17,46 +14,25 @@ internal class HexHelper
         return new Vector3(qCube, rCube, sCube);
     }
 
-    public static Vector3 Rounding(Vector2 axial, Vector3 cube) //rounds off coords
+    public static Vector2 CubeToAxial(Vector3 cube)
     {
-        Vector3 cubeRounded;
-        if (axial != null && cube == Vector3.zero)
-            cubeRounded = AxialToCube(axial.x, axial.y);
-        else
-            cubeRounded = cube;
+        var qhex = cube.x;
+        var rhex = cube.y;
 
-        var q = Mathf.Round(cubeRounded.x);
-        var r = Mathf.Round(cubeRounded.y);
-        var s = Mathf.Round(cubeRounded.z);
-
-
-        var qDiff = Mathf.Abs(q - cubeRounded.x);
-        var rDiff = Mathf.Abs(r - cubeRounded.y);
-        var sDiff = Mathf.Abs(s - cubeRounded.z);
-
-        if (qDiff > rDiff && qDiff > sDiff)
-            q = -r - s;
-        else if (rDiff > sDiff)
-            r = -q - s;
-        else
-            s = -q - r;
-
-
-        return new Vector3((int)q, (int)r, (int)s);
+        return new Vector2(qhex, rhex);
     }
 
-    //////////////////////////
     public static Position AxialRound(float q, float r)
     {
         Vector2 hex = CubeToAxial(CubeRound(AxialToCube(q, r)));
         return new Position((int)hex.x, (int)hex.y);
     }
+
     public static Vector3 CubeRound(Vector3 cube)
     {
         var q = Mathf.Round(cube.x);
         var r = Mathf.Round(cube.y);
         var s = Mathf.Round(cube.z);
-
 
         var qDiff = Mathf.Abs(q - cube.x);
         var rDiff = Mathf.Abs(r - cube.y);
@@ -69,23 +45,8 @@ internal class HexHelper
         else
             s = -q - r;
 
-
         return new Vector3(q, r, s);
     }
-    public static Vector2 CubeToAxial(Vector3 cube)
-    {
-        var qhex = cube.x;
-        var rhex = cube.y;
-
-        return new Vector2(qhex, rhex);
-    }
-
-    //////////////////////////
-
-    //public static int CubeDistance(Position fromPos, Position toPos)
-    //{
-    //    return (int)(MathF.Abs(fromPos.Q - toPos.Q) + MathF.Abs(fromPos.R - toPos.R) + MathF.Abs(fromPos.S - toPos.S)) / 2;
-    //}
 
     public static Position AxialSubtract(Position a, Position b) => new Position(a.Q - b.Q, a.R - b.R);
     public static Position AxialAdd(Position a, Position b) => new Position(a.Q + b.Q, a.R + b.R);

@@ -24,6 +24,56 @@ public class Engine
         _boardView = boardView;
     }
 
+    internal void CardLogic(Position position)
+    {
+        var cards = _deck.GetComponentsInChildren<DraggableImage>();
+        foreach (DraggableImage card in cards)
+        {
+            if (card.IsPlayed)
+            {
+                if (card.Type == Cards.Teleport)
+                {
+                    card.IsPlayed = _board.Move(PositionHelper.WorldToHexPosition(_player.WorldPosition), position);
+                }
+                else if (!_selectedPositions.Contains(position))
+                {
+                    card.IsPlayed = false;
+                    return;
+                }
+                else if (card.Type == Cards.Swipe)
+                {
+                    foreach (Position pos in _selectedPositions)
+                    {
+                        _board.Take(pos);
+                    }
+                }
+                else if (card.Type == Cards.Shoot)
+                {
+                    foreach (Position pos in _selectedPositions)
+                    {
+                        _board.Take(pos);
+                    }
+                }
+                else if (card.Type == Cards.Push)
+                {
+                    foreach (Position pos in _selectedPositions)
+                    {
+                        Position offset = HexHelper.AxialSubtract(pos, PositionHelper.WorldToHexPosition(_player.WorldPosition));
+                        Position moveTo = HexHelper.AxialAdd(pos, offset);
+
+                        if (_board.IsValidPosition(moveTo))
+                        {
+                            _board.Move(pos, moveTo);
+                        }
+                        else
+                            _board.Take(pos);
+                    }
+                }
+            }
+        }
+        _deck.DeckUpdate();
+    }
+
     internal List<Position> GetValidPositions(Cards card)
     {
         List<Position> positions = new List<Position>();

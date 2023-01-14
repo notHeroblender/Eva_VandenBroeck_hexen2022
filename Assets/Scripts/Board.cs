@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 
 public class PieceMovedEventArgs : EventArgs
 {
     public CharView Piece { get; }
-
     public Position FromPosition { get; }
-
     public Position ToPosition { get; }
 
     public PieceMovedEventArgs(CharView piece, Position fromPosition, Position toPosition)
@@ -21,9 +18,7 @@ public class PieceMovedEventArgs : EventArgs
 public class PieceTakenEventArgs : EventArgs
 {
     public CharView Piece { get; }
-
     public Position FromPosition { get; }
-
     public PieceTakenEventArgs(CharView piece, Position fromPosition)
     {
         Piece = piece;
@@ -34,9 +29,7 @@ public class PieceTakenEventArgs : EventArgs
 public class PiecePlacedEventArgs : EventArgs
 {
     public CharView Piece { get; }
-
     public Position ToPosition { get; }
-
     public PiecePlacedEventArgs(CharView piece, Position toPosition)
     {
         Piece = piece;
@@ -52,13 +45,11 @@ public class Board //<> represents what's in the dictionary
 
     private Dictionary<Position, CharView> _pieces = new Dictionary<Position, CharView>();
 
-    private readonly int _rows;
-    private readonly int _columns;
+    private readonly int _distance;
 
-    public Board(int rows, int columns)
+    public Board(int distance)
     {
-        _rows = rows;
-        _columns = columns;
+        _distance = distance;
     }
     public bool TryGetPiece(Position position, out CharView piece)
             => _pieces.TryGetValue(position, out piece);
@@ -66,8 +57,8 @@ public class Board //<> represents what's in the dictionary
     public bool TryGetPieceAt(Position position, out CharView piece)
         => _pieces.TryGetValue(position, out piece);
 
-    public bool IsValid(Position position)
-        => (0 <= position.Q && position.Q < _columns) && (0 <= position.R && position.R < _rows);
+    public bool IsValidPosition(Position position)
+        => (_distance >= HexHelper.AxialDistance(new Position(0, 0), position));
 
     //places new piece on position
     public bool Place(Position position, CharView piece)
@@ -75,7 +66,7 @@ public class Board //<> represents what's in the dictionary
         if (piece == null)
             return false;
 
-        if (!IsValid(position))
+        if (!IsValidPosition(position))
             return false;
 
         if (_pieces.ContainsKey(position))
@@ -94,7 +85,7 @@ public class Board //<> represents what's in the dictionary
     //changes piece position
     public bool Move(Position fromPosition, Position toPosition)
     {
-        if (!IsValid(toPosition))
+        if (!IsValidPosition(toPosition))
             return false;
 
         if (_pieces.ContainsKey(toPosition))
@@ -114,7 +105,7 @@ public class Board //<> represents what's in the dictionary
     //removes piece from position
     public bool Take(Position fromPosition)
     {
-        if (!IsValid(fromPosition))
+        if (!IsValidPosition(fromPosition))
             return false;
 
         if (!_pieces.ContainsKey(fromPosition))

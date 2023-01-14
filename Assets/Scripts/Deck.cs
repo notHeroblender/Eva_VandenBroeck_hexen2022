@@ -24,7 +24,7 @@ public class Deck : MonoBehaviour
         DeckUpdate();
     }
 
-    private void DeckUpdate()
+    public void DeckUpdate()
     {
         List<GameObject> temp = new List<GameObject>(_cards);
 
@@ -39,19 +39,36 @@ public class Deck : MonoBehaviour
                 card.SetActive(false);
             }
         }
+
+        int handSize;
+        if (temp.Count >= 5)
+            handSize = _handSize;
+        else
+            handSize = temp.Count;
+
+        for (int i = 0; i < handSize; i++)
+        {
+            GameObject card = temp[i];
+            card.SetActive(true);
+            card.transform.position = startPosition;
+
+            startPosition += new Vector3(120, 0);
+        }
+
+        _cards = temp.ToArray();
     }
 
     //card placement
     private Vector3 GetStartPosition(List<GameObject> temp, Vector3 position)
     {
         if (temp.Count >= 5)
-            startPosition = transform.position + new Vector3(-120, 0, 0);
+            startPosition = transform.position + new Vector3(-240, 0, 0);
         else if (temp.Count == 4)
-            startPosition = transform.position + new Vector3(-90, 0, 0);
+            startPosition = transform.position + new Vector3(-180, 0, 0);
         else if (temp.Count == 3)
-            startPosition = transform.position + new Vector3(-60, 0, 0);
+            startPosition = transform.position + new Vector3(-120, 0, 0);
         else if (temp.Count == 2)
-            startPosition = transform.position + new Vector3(-30, 0, 0);
+            startPosition = transform.position + new Vector3(-60, 0, 0);
         else if (temp.Count == 1)
             startPosition = transform.position;
 

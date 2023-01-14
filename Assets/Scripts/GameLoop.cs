@@ -1,18 +1,57 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameLoop : MonoBehaviour
 {
-    // Start is called before the first frame update
+    [SerializeField] private GameObject _enemy;
+    private Board _board;
+    private Deck _deck;
+    private BoardView _boardView;
+    //private CharView Player1;
+    private Engine _engine;
+    private CharView[] _pieces;
+
+
     void Start()
     {
-        
+        SpawnHelper.SpawnEnemies(_enemy, 8);
+
+        _deck = FindObjectOfType<Deck>();
+
+        _board = new Board(PositionHelper.Distance);
+        _board.PieceMoved += (s, e)
+             => e.Piece.MoveTo(PositionHelper.HexToWorldPosition(e.ToPosition));
+
+        _board.PieceTaken += (s, e)
+            => e.Piece.Taken();
+
+        _board.PiecePlaced += (s, e)
+           => e.Piece.Placed(PositionHelper.HexToWorldPosition(e.ToPosition));
+
+        var piecesViews = FindObjectsOfType<CharView>();
+
+        foreach (var pieceView in piecesViews)
+            _board.Place(PositionHelper.WorldToHexPosition(pieceView.WorldPosition), pieceView);
+
+        CharView player = null;
+        foreach (var pieceView in piecesViews)
+            if (pieceView.Player == Player.Player)
+            {
+                player = pieceView;
+                break;
+            }
+        _pieces = piecesViews;
+
+        var boardView = FindObjectOfType<BoardView>();
+        boardView.PositionClicked += OnPositionClicked;
+        _boardView = boardView;
+
+        _engine = new Engine(_board, _boardView, player, _deck, _pieces);
+
+        _deck.CardSetup(_engine);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnPositionClicked(object sender, PositionEventArgs e)
     {
-        
+        _engine.CardLogic(e.Position);
     }
 }

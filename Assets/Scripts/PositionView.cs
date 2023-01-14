@@ -2,7 +2,7 @@
 using UnityEngine.Events;
 using UnityEngine;
 
-public class PositionView : MonoBehaviour
+public class PositionView : MonoBehaviour, IPointerClickHandler
 {
     [SerializeField] private UnityEvent OnActivate;
     [SerializeField] private UnityEvent OnDeActivate;
@@ -19,6 +19,7 @@ public class PositionView : MonoBehaviour
     {
         _parent.ChildClicked(this);
     }
+
     internal void DeActivate()
     {
         OnDeActivate?.Invoke();
@@ -28,5 +29,4 @@ public class PositionView : MonoBehaviour
     {
         OnActivate?.Invoke();
     }
-
 }

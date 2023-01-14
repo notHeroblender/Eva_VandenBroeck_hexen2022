@@ -53,7 +53,7 @@ public class MoveSetHelper
         var nextPosition = new Position(_fromPosition.Q + xOffset, _fromPosition.R + yOffset);
 
         var steps = 0;
-        while (steps < maxSteps && _board.IsValid(nextPosition))
+        while (steps < maxSteps && _board.IsValidPosition(nextPosition))
         {
 
             _validPositions.Add(nextPosition);

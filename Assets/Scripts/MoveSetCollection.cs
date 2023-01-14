@@ -32,29 +32,34 @@ public class MoveSetCollection
         return positions;
     }
 
-
     private static List<Position> GetTileConeRightUp(CharView player, Board board)
     {
-        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition)).RightUp(1).LeftUp(1).Right(1).CollectValidPositions(); //RightUp
+        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
+            .RightUp(1).LeftUp(1).Right(1).CollectValidPositions(); //RightUp
     }
     private static List<Position> GetTileConeRight(CharView player, Board board)
     {
-        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition)).Right(1).RightUp(1).RightDown(1).CollectValidPositions(); //Right
+        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
+            .Right(1).RightUp(1).RightDown(1).CollectValidPositions(); //Right
     }
     private static List<Position> GetTileConeRightDown(CharView player, Board board)
     {
-        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition)).RightDown(1).Right(1).LeftDown(1).CollectValidPositions(); //RightDown
+        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
+            .RightDown(1).Right(1).LeftDown(1).CollectValidPositions(); //RightDown
     }
     private static List<Position> GetTileConeLeftUp(CharView player, Board board)
     {
-        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition)).LeftUp(1).RightUp(1).Left(1).CollectValidPositions(); //LeftUp
+        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
+            .LeftUp(1).RightUp(1).Left(1).CollectValidPositions(); //LeftUp
     }
     private static List<Position> GetTileConeLeft(CharView player, Board board)
     {
-        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition)).Left(1).LeftUp(1).LeftDown(1).CollectValidPositions(); //Left
+        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
+            .Left(1).LeftUp(1).LeftDown(1).CollectValidPositions(); //Left
     }
     private static List<Position> GetTileConeLeftDown(CharView player, Board board)
     {
-        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition)).LeftDown(1).Left(1).RightDown(1).CollectValidPositions(); //LeftDown
+        return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
+            .LeftDown(1).Left(1).RightDown(1).CollectValidPositions(); //LeftDown
     }
 }

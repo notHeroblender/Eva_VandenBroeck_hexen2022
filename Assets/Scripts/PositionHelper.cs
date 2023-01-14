@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class PositionHelper
 {
@@ -10,7 +10,7 @@ public class PositionHelper
         var hexPostionQ = (Mathf.Sqrt(3f) / 3f * worldpostion.x - 1f / 3f * worldpostion.z) / HexSize;
         var hexPostionR = (2f / 3f * worldpostion.z) / HexSize;
 
-        return HexHelper.AxialRound(hexPostionQ, hexPostionR);
+        return HexHelper.AxialRound(hexPostionQ,hexPostionR);
     }
 
     public static Vector3 HexToWorldPosition(Position hexPostion)

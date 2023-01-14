@@ -1,10 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
-
-internal class HexHelper
+public class HexHelper
 {
+    public static Vector2 CubeToAxial(Vector3 cube)
+    {
+        var qhex = cube.x;
+        var rhex = cube.y;
+
+        return new Vector2(qhex, rhex);
+    }
+
     public static Vector3 AxialToCube(float q, float r)
     {
         var qCube = q;
@@ -12,14 +17,6 @@ internal class HexHelper
         var sCube = -q - r;
 
         return new Vector3(qCube, rCube, sCube);
-    }
-
-    public static Vector2 CubeToAxial(Vector3 cube)
-    {
-        var qhex = cube.x;
-        var rhex = cube.y;
-
-        return new Vector2(qhex, rhex);
     }
 
     public static Position AxialRound(float q, float r)
@@ -55,7 +52,4 @@ internal class HexHelper
     {
         return (Mathf.Abs(a.Q - b.Q) + Mathf.Abs(a.Q + a.R - b.Q - b.R) + Mathf.Abs(a.R - b.R)) / 2;
     }
-
 }
-
-

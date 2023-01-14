@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UIElements;
 
 public class Engine
 {
@@ -10,12 +6,12 @@ public class Engine
     public List<Position> SelectedPositions => _selectedPositions;
 
     private Board _board;
-    private CharView _player;
+    private PieceView _player;
     private Deck _deck;
-    private CharView[] _pieces;
+    private PieceView[] _pieces;
     private BoardView _boardView;
 
-    public Engine(Board board, BoardView boardView, CharView player, Deck deck, CharView[] pieces)
+    public Engine(Board board, BoardView boardView, PieceView player, Deck deck, PieceView[] pieces)
     {
         _board = board;
         _player = player;
@@ -24,14 +20,14 @@ public class Engine
         _boardView = boardView;
     }
 
-    internal void CardLogic(Position position)
+    public void CardLogic(Position position)
     {
-        var cards = _deck.GetComponentsInChildren<DraggableImage>();
-        foreach (DraggableImage card in cards)
+        var cards = _deck.GetComponentsInChildren<Card>();
+        foreach (Card card in cards)
         {
             if (card.IsPlayed)
             {
-                if (card.Type == Cards.Teleport)
+                if (card.Type == CardType.Move)
                 {
                     card.IsPlayed = _board.Move(PositionHelper.WorldToHexPosition(_player.WorldPosition), position);
                 }
@@ -40,21 +36,21 @@ public class Engine
                     card.IsPlayed = false;
                     return;
                 }
-                else if (card.Type == Cards.Swipe)
+                else if (card.Type == CardType.Slash)
                 {
                     foreach (Position pos in _selectedPositions)
                     {
                         _board.Take(pos);
                     }
                 }
-                else if (card.Type == Cards.Shoot)
+                else if (card.Type == CardType.Shoot)
                 {
                     foreach (Position pos in _selectedPositions)
                     {
                         _board.Take(pos);
                     }
                 }
-                else if (card.Type == Cards.Push)
+                else if (card.Type == CardType.ShockWave)
                 {
                     foreach (Position pos in _selectedPositions)
                     {
@@ -74,13 +70,58 @@ public class Engine
         _deck.DeckUpdate();
     }
 
-    internal List<Position> GetValidPositions(Cards card)
+    public void SetHighlights(Position position, CardType type, List<Position> validPositions, List<List<Position>> validPositionGroups = null)
+    {
+        switch (type)
+        {
+            case CardType.Move:
+                if (validPositions.Contains(position))
+                {
+                    List<Position> positions = new List<Position>();
+
+                    positions.Add(position);
+                    SetActiveTiles(positions);
+                }
+                break;
+
+            case CardType.Shoot:
+            case CardType.Slash:
+            case CardType.ShockWave:
+                if (!validPositions.Contains(position))
+                {
+                    SetActiveTiles(validPositions);
+                }
+                else
+                {
+                    foreach (List<Position> positions in validPositionGroups)
+                    {
+                        if (positions.Count == 0) continue;
+
+                        if ((type == CardType.Shoot && positions.Contains(position)) || (type == CardType.Slash && positions[0] == position) || (type == CardType.ShockWave && positions[0] == position))
+                        {
+                            SetActiveTiles(positions);
+                            _selectedPositions = positions;
+                            break;
+                        }
+                    }
+                }
+                break;
+            default:
+                _selectedPositions = new List<Position>();
+                break;
+        }
+    }
+    public void SetActiveTiles(List<Position> positions)
+    {
+        _boardView.SetActivePosition = positions;
+    }
+
+    public List<Position> GetValidPositions(CardType card)
     {
         List<Position> positions = new List<Position>();
 
-        if (card == Cards.Teleport)
+        if (card == CardType.Move)
         {
-
             foreach (var position in _boardView.TilePositions)
             {
                 bool positionIsFree = true;
@@ -103,65 +144,17 @@ public class Engine
         }
         return null;
     }
-    public List<List<Position>> GetValidPositionsGroups(Cards card)
+
+    public List<List<Position>> GetValidPositionsGroups(CardType card)
     {
-        if (card == Cards.Shoot)
+        if (card == CardType.Shoot)
         {
             return MoveSetCollection.GetValidTilesForShoot(_player, _board);
         }
-        else if (card == Cards.Swipe || card == Cards.Push)
+        else if (card == CardType.Slash || card == CardType.ShockWave)
         {
             return MoveSetCollection.GetValidTilesForCones(_player, _board);
         }
         return null;
-    }
-
-    internal void SetActiveTiles(List<Position> positions)
-    {
-        _boardView.SetActivePosition = positions;
-    }
-
-    internal void SetHighlights(Position hexPosition, Cards type, List<Position> validPositions, List<List<Position>> validPositionGroups)
-    {
-        switch (type)
-        {
-            case Cards.Teleport:
-                if (validPositions.Contains(hexPosition))
-                {
-                    List<Position> positions = new List<Position>();
-
-                    positions.Add(hexPosition);
-                    SetActiveTiles(positions);
-                }
-                break;
-
-            case Cards.Shoot:
-            case Cards.Swipe:
-            case Cards.Push:
-                if (!validPositions.Contains(hexPosition))
-                {
-                    SetActiveTiles(validPositions);
-                }
-                else
-                {
-                    foreach (List<Position> positions in validPositionGroups)
-                    {
-                        if (positions.Count == 0) continue;
-
-                        if ((type == Cards.Shoot && positions.Contains(hexPosition)) || 
-                            (type == Cards.Swipe && positions[0] == hexPosition) || 
-                            (type == Cards.Push && positions[0] == hexPosition))
-                        {
-                            SetActiveTiles(positions);
-                            _selectedPositions = positions;
-                            break;
-                        }
-                    }
-                }
-                break;
-            default:
-                _selectedPositions = new List<Position>();
-                break;
-        }
     }
 }

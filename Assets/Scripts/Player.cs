@@ -1,5 +1,4 @@
-﻿
-public enum Player
+﻿public enum Player
 {
-    Player, Enemy
+    Player1, Enemy
 }

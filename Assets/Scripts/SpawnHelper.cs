@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+
 
 public class SpawnHelper : MonoBehaviour
 {
     public static Position PlayerSpawn = new Position(0, 0);
-
+    
     public static List<Position> ValidPositions = new List<Position>();
 
-    public static void SpawnEnemies(GameObject entity, int amount)
+    public static void SpawnEnemies(GameObject entity, int amount) 
     {
         var positionViews = FindObjectsOfType<PositionView>();
 
-        foreach (PositionView positionView in positionViews)
+        foreach(PositionView positionView in positionViews)
         {
             //add all pos except the player spawn to the list
             if (positionView.HexPosition.Q != PlayerSpawn.Q && positionView.HexPosition.R != PlayerSpawn.R)

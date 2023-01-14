@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -43,25 +42,21 @@ public class MoveSetHelper
     public MoveSetHelper LeftDown(int maxSteps = int.MaxValue, params Validator[] validators)
             => Collect(0, -1, maxSteps, validators);
 
-
-
     public MoveSetHelper Collect(int xOffset, int yOffset, int maxSteps = int.MaxValue, params Validator[] validators)
     {
-        xOffset *= (_player == Player.Player) ? 1 : -1;
-        yOffset *= (_player == Player.Player) ? 1 : -1;
+        xOffset *= (_player == Player.Player1) ? 1 : -1;
+        yOffset *= (_player == Player.Player1) ? 1 : -1;
 
         var nextPosition = new Position(_fromPosition.Q + xOffset, _fromPosition.R + yOffset);
 
         var steps = 0;
-        while (steps < maxSteps && _board.IsValidPosition(nextPosition))
+        while(steps < maxSteps && _board.IsValidPosition(nextPosition))
         {
-
+           
             _validPositions.Add(nextPosition);
             nextPosition = new Position(nextPosition.Q + xOffset, nextPosition.R + yOffset);
             steps++;
         }
-
         return this;
-
     }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,8 +14,12 @@ public class PositionEventArgs : EventArgs
 public class BoardView : MonoBehaviour
 {
     public event EventHandler<PositionEventArgs> PositionClicked;
+
     private Dictionary<Position, PositionView> _positionViews = new Dictionary<Position, PositionView>();
+
+
     private List<Position> _activePosition = new List<Position>();
+
     private List<Position> _tilePositons = new List<Position>();
     public List<Position> TilePositions => _tilePositons;
 
@@ -49,13 +53,11 @@ public class BoardView : MonoBehaviour
     }
 
     internal void ChildClicked(PositionView positionView)
-    {
-        OnPositionClicked(new PositionEventArgs(positionView.HexPosition));
-    }
+        => OnPositionClicked(new PositionEventArgs(positionView.HexPosition));
 
-    protected virtual void OnPositionClicked(PositionEventArgs positionEventArgs)
+    protected virtual void OnPositionClicked(PositionEventArgs e)
     {
         var handler = PositionClicked;
-        handler.Invoke(this, positionEventArgs);
+        handler.Invoke(this, e);
     }
 }

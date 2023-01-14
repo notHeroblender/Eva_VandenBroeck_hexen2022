@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 public class PieceMovedEventArgs : EventArgs
 {
-    public CharView Piece { get; }
+    public PieceView Piece { get; }
     public Position FromPosition { get; }
     public Position ToPosition { get; }
 
-    public PieceMovedEventArgs(CharView piece, Position fromPosition, Position toPosition)
+    public PieceMovedEventArgs(PieceView piece, Position fromPosition, Position toPosition)
     {
         Piece = piece;
         FromPosition = fromPosition;
@@ -17,9 +17,10 @@ public class PieceMovedEventArgs : EventArgs
 
 public class PieceTakenEventArgs : EventArgs
 {
-    public CharView Piece { get; }
+    public PieceView Piece { get; }
     public Position FromPosition { get; }
-    public PieceTakenEventArgs(CharView piece, Position fromPosition)
+
+    public PieceTakenEventArgs(PieceView piece, Position fromPosition)
     {
         Piece = piece;
         FromPosition = fromPosition;
@@ -28,40 +29,43 @@ public class PieceTakenEventArgs : EventArgs
 
 public class PiecePlacedEventArgs : EventArgs
 {
-    public CharView Piece { get; }
+    public PieceView Piece { get; }
     public Position ToPosition { get; }
-    public PiecePlacedEventArgs(CharView piece, Position toPosition)
+
+    public PiecePlacedEventArgs(PieceView piece, Position fromPosition)
     {
         Piece = piece;
-        ToPosition = toPosition;
+        ToPosition = fromPosition;
     }
 }
 
-public class Board //<> represents what's in the dictionary
+public class Board
 {
     public event EventHandler<PieceMovedEventArgs> PieceMoved;
     public event EventHandler<PieceTakenEventArgs> PieceTaken;
     public event EventHandler<PiecePlacedEventArgs> PiecePlaced;
 
-    private Dictionary<Position, CharView> _pieces = new Dictionary<Position, CharView>();
-
+    private Dictionary<Position, PieceView> _pieces = new Dictionary<Position, PieceView>();
+    
+        
     private readonly int _distance;
-
+        
     public Board(int distance)
     {
         _distance = distance;
+
     }
-    public bool TryGetPiece(Position position, out CharView piece)
+    public bool TryGetPiece(Position position, out PieceView piece)
             => _pieces.TryGetValue(position, out piece);
 
-    public bool TryGetPieceAt(Position position, out CharView piece)
+    public bool TryGetPieceAt(Position position, out PieceView piece)
         => _pieces.TryGetValue(position, out piece);
 
     public bool IsValidPosition(Position position)
-        => (_distance >= HexHelper.AxialDistance(new Position(0, 0), position));
+        => (_distance >= HexHelper.AxialDistance(new Position(0,0), position));
 
     //places new piece on position
-    public bool Place(Position position, CharView piece)
+    public bool Place(Position position, PieceView piece)
     {
         if (piece == null)
             return false;
@@ -75,9 +79,9 @@ public class Board //<> represents what's in the dictionary
         if (_pieces.ContainsValue(piece))
             return false;
 
-        _pieces[position] = piece;
-
         OnPiecePlaced(new PiecePlacedEventArgs(piece, position));
+
+        _pieces[position] = piece;
 
         return true;
     }
@@ -93,7 +97,7 @@ public class Board //<> represents what's in the dictionary
 
         if (!_pieces.TryGetValue(fromPosition, out var piece))
             return false;
-
+        
         _pieces.Remove(fromPosition);
         _pieces[toPosition] = piece;
 
@@ -133,7 +137,7 @@ public class Board //<> represents what's in the dictionary
         handler?.Invoke(this, eventArgs);
     }
 
-    protected virtual void OnPiecePlaced(PiecePlacedEventArgs eventArgs)
+    private void OnPiecePlaced(PiecePlacedEventArgs eventArgs)
     {
         var handler = PiecePlaced;
         handler?.Invoke(this, eventArgs);

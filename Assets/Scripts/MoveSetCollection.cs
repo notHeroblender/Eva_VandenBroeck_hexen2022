@@ -1,10 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class MoveSetCollection
+public class MoveSetCollection 
 {
-    public static List<List<Position>> GetValidTilesForShoot(CharView player, Board board)
+    public static List<List<Position>> GetValidTilesForShoot(PieceView player, Board board)
     {
         List<List<Position>> positions = new List<List<Position>>();
 
@@ -18,7 +16,7 @@ public class MoveSetCollection
         return positions;
     }
 
-    public static List<List<Position>> GetValidTilesForCones(CharView player, Board board)
+    public static List<List<Position>> GetValidTilesForCones(PieceView player , Board board)
     {
         List<List<Position>> positions = new List<List<Position>>();
 
@@ -32,32 +30,33 @@ public class MoveSetCollection
         return positions;
     }
 
-    private static List<Position> GetTileConeRightUp(CharView player, Board board)
+
+    private static List<Position> GetTileConeRightUp(PieceView player, Board board)
     {
         return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
             .RightUp(1).LeftUp(1).Right(1).CollectValidPositions(); //RightUp
     }
-    private static List<Position> GetTileConeRight(CharView player, Board board)
+    private static List<Position> GetTileConeRight(PieceView player, Board board)
     {
         return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
             .Right(1).RightUp(1).RightDown(1).CollectValidPositions(); //Right
     }
-    private static List<Position> GetTileConeRightDown(CharView player, Board board)
+    private static List<Position> GetTileConeRightDown(PieceView player, Board board)
     {
         return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
             .RightDown(1).Right(1).LeftDown(1).CollectValidPositions(); //RightDown
     }
-    private static List<Position> GetTileConeLeftUp(CharView player, Board board)
+    private static List<Position> GetTileConeLeftUp(PieceView player, Board board)
     {
         return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
             .LeftUp(1).RightUp(1).Left(1).CollectValidPositions(); //LeftUp
     }
-    private static List<Position> GetTileConeLeft(CharView player, Board board)
+    private static List<Position> GetTileConeLeft(PieceView player, Board board)
     {
         return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
             .Left(1).LeftUp(1).LeftDown(1).CollectValidPositions(); //Left
     }
-    private static List<Position> GetTileConeLeftDown(CharView player, Board board)
+    private static List<Position> GetTileConeLeftDown(PieceView player, Board board)
     {
         return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))
             .LeftDown(1).Left(1).RightDown(1).CollectValidPositions(); //LeftDown

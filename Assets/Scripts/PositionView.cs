@@ -20,13 +20,20 @@ public class PositionView : MonoBehaviour, IPointerClickHandler
         _parent.ChildClicked(this);
     }
 
+    //remove highlight
     internal void DeActivate()
     {
         OnDeActivate?.Invoke();
     }
 
+    //highlight
     internal void Activate()
     {
         OnActivate?.Invoke();
+    }
+
+    internal void Remove()
+    {
+        this.gameObject.SetActive(false);
     }
 }

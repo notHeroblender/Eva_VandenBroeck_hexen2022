@@ -2,14 +2,13 @@ using UnityEngine;
 
 public class GameLoop : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject _enemy;
+    [SerializeField] private GameObject _enemy;
     private Board _board;
     private Deck _deck;
     private BoardView _boardView;
     private Engine _engine;
     private PieceView[] _pieces;
-
+    private PositionView[] _positionViews;
 
     void Start()
     {
@@ -28,6 +27,7 @@ public class GameLoop : MonoBehaviour
            => e.Piece.Placed(PositionHelper.HexToWorldPosition(e.ToPosition));
 
         var piecesViews = FindObjectsOfType<PieceView>();
+        var positionViews = FindObjectsOfType<PositionView>();
 
         foreach (var pieceView in piecesViews)
             _board.Place(PositionHelper.WorldToHexPosition(pieceView.WorldPosition), pieceView);
@@ -39,13 +39,15 @@ public class GameLoop : MonoBehaviour
             player = pieceView;
             break;
          }
+        _positionViews = positionViews;
         _pieces = piecesViews;
+
         
         var boardView = FindObjectOfType<BoardView>();
         boardView.PositionClicked += OnPositionClicked;
         _boardView = boardView;
 
-        _engine = new Engine(_board, _boardView, player, _deck, _pieces);
+        _engine = new Engine(_board, _boardView, player, _deck, _pieces, _positionViews);
 
         _deck.SetupCards(_engine);
     }

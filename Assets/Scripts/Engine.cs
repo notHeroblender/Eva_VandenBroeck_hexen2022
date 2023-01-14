@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 public class Engine
 {
@@ -10,14 +11,16 @@ public class Engine
     private Deck _deck;
     private PieceView[] _pieces;
     private BoardView _boardView;
+    private PositionView[] _positionViews;
 
-    public Engine(Board board, BoardView boardView, PieceView player, Deck deck, PieceView[] pieces)
+    public Engine(Board board, BoardView boardView, PieceView player, Deck deck, PieceView[] pieces, PositionView[] positionViews)
     {
         _board = board;
         _player = player;
         _deck = deck;
         _pieces = pieces;
         _boardView = boardView;
+        _positionViews = positionViews;
     }
 
     public void CardLogic(Position position)
@@ -68,6 +71,63 @@ public class Engine
             }
         }
         _deck.DeckUpdate();
+    }
+    public void DestroyRandom()
+    {
+        int maxValue = _boardView.TilePositions.Count;
+        int[] rnds = new int[3];
+        int leftOverTiles = 0;
+
+        foreach (PositionView position in _positionViews)
+        {
+            if (position.gameObject.activeSelf)
+            {
+                leftOverTiles++;
+            }
+        }
+        if (leftOverTiles >= 3)
+        {
+            for (int i = 0; i < rnds.Length; i++)
+            {
+                int rnd = Random.Range(0, maxValue);
+                while (ArrayContains(rnds, rnd, _positionViews[rnd]))
+                {
+                    rnd = Random.Range(0, maxValue);
+                }
+                rnds[i] = rnd;
+            }
+
+            foreach (int i in rnds)
+            {
+                _positionViews[i].Remove();
+                Debug.Log(i);
+
+                _positionViews[i].Remove();
+                var pos = _positionViews[i].HexPosition;
+                foreach (var piece in _pieces)
+                {
+                    var pieceHexPosition = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                    if (pieceHexPosition.Q == pos.Q &&
+                        pieceHexPosition.R == pos.R &&
+                        piece.gameObject.activeSelf)
+                    {
+                        piece.Taken();
+                    }
+                }
+            }
+        }
+    }
+
+    private bool ArrayContains(int[] array, int value, PositionView positionView)
+    {
+        foreach (int element in array)
+        {
+            if (element == value || !positionView.gameObject.activeSelf)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void SetHighlights(Position position, CardType type, List<Position> validPositions, List<List<Position>> validPositionGroups = null)
@@ -122,14 +182,16 @@ public class Engine
 
         if (card == CardType.Move)
         {
-            foreach (var position in _boardView.TilePositions)
+            foreach (var tilePositions in _boardView.TilePositions)
             {
                 bool positionIsFree = true;
 
                 foreach (var piece in _pieces)
                 {
-                    var pos = PositionHelper.WorldToHexPosition(piece.WorldPosition);
-                    if (pos.Q == position.Q && pos.R == position.R && piece.gameObject.activeSelf)
+                    var pieceHexPosition = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                    if (pieceHexPosition.Q == tilePositions.Q && 
+                        pieceHexPosition.R == tilePositions.R && 
+                        piece.gameObject.activeSelf)
                     {
                         positionIsFree = false;
                         break;
@@ -137,7 +199,7 @@ public class Engine
                 }
                 if (positionIsFree)
                 {
-                    positions.Add(position);
+                    positions.Add(tilePositions);
                 }
             }
             return positions;

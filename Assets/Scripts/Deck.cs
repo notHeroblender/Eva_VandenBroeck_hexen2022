@@ -1,11 +1,13 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Deck : MonoBehaviour
 {
     [SerializeField] private static int _deckSize = 12;
     [SerializeField] private int _handSize = 5;
-    [SerializeField] private GameObject[] _cards;
+    [SerializeField] private int _currentHandSize;
+    [SerializeField] public List<GameObject> _cards;
     [SerializeField] private GameObject[] _cardPrefabs;
 
     public void SetupCards(Engine engine)
@@ -45,6 +47,8 @@ public class Deck : MonoBehaviour
         else
             handSize = tmp.Count;
 
+        _currentHandSize = handSize;
+
         //Can be replaced with Horizontal Layout Group
         for (int i = 0; i < handSize; i++)
         {
@@ -54,7 +58,15 @@ public class Deck : MonoBehaviour
 
             startPosition += new Vector3(120, 0);
         }
-        _cards = tmp.ToArray();
+        _cards = tmp;
+    }
+
+    public void ReturnCard(Card card, int cardIndex)
+    {
+        card.gameObject.SetActive(true);
+        _cards[_currentHandSize - 1].gameObject.SetActive(false);
+        _cards.Insert(cardIndex, card.gameObject);
+        DeckUpdate();
     }
 
     //card placement

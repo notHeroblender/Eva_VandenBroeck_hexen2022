@@ -33,6 +33,7 @@ public class Engine
                 if (card.Type == CardType.Move)
                 {
                     var playerPosition = PositionHelper.WorldToHexPosition(_player.WorldPosition);
+                    var cardIndex = _deck._cards.IndexOf(card.gameObject);
                     Action execute = () =>
                     {
                         card.IsPlayed = _board.Move(playerPosition, position);
@@ -40,6 +41,7 @@ public class Engine
                     Action undo = () =>
                     {
                         card.IsPlayed = !_board.Move(position, playerPosition);
+                        _deck.ReturnCard(card, cardIndex);
                     };
 
                     var command = new DelegateCommand(execute, undo);

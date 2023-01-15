@@ -30,17 +30,22 @@ public class Engine
         {
             if (card.IsPlayed)
             {
+                var cardIndex = _deck._cards.IndexOf(card.gameObject);
+
                 if (card.Type == CardType.Move)
                 {
                     var playerPosition = PositionHelper.WorldToHexPosition(_player.WorldPosition);
-                    var cardIndex = _deck._cards.IndexOf(card.gameObject);
+                    _commandQueue.ReturnCommands();
                     Action execute = () =>
                     {
                         card.IsPlayed = _board.Move(playerPosition, position);
+                        card.IsPlayed = true;
+                        _deck.DeckUpdate();
                     };
                     Action undo = () =>
                     {
-                        card.IsPlayed = !_board.Move(position, playerPosition);
+                        _board.Move(position, playerPosition);
+                        card.IsPlayed = false;
                         _deck.ReturnCard(card, cardIndex);
                     };
 
@@ -54,32 +59,140 @@ public class Engine
                 }
                 else if (card.Type == CardType.Slash)
                 {
-                    foreach (Position pos in _selectedPositions)
+                    List<PieceView> takenPieces = new List<PieceView>();
+                    _commandQueue.ReturnCommands();
+                    Action execute = () =>
                     {
-                        _board.Take(pos);
-                    }
+                        foreach (Position pos in _selectedPositions)
+                        {
+                            foreach (var piece in _pieces)
+                            {
+                                var piecePos = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                                if (pos.Q == piecePos.Q && pos.R == piecePos.R && piece.gameObject.activeSelf)
+                                {
+                                    takenPieces.Add(piece);
+                                }
+                            }
+                            _board.Take(pos);
+                        }
+                        _deck.DeckUpdate();
+                    };
+                    Action undo = () =>
+                    {
+                        foreach (var piece in takenPieces)
+                        {
+                            var piecePos = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                            _board.Place(piecePos,piece);
+                            piece.gameObject.SetActive(true);
+                        }
+                        card.IsPlayed = false;
+                        _deck.ReturnCard(card, cardIndex);
+                    };
+
+                    var command = new DelegateCommand(execute, undo);
+                    _commandQueue.Execute(command);
                 }
                 else if (card.Type == CardType.Shoot)
                 {
-                    foreach (Position pos in _selectedPositions)
+                    List<PieceView> takenPieces = new List<PieceView>();
+                    _commandQueue.ReturnCommands();
+                    Action execute = () =>
                     {
-                        _board.Take(pos);
-                    }
+                        foreach (Position pos in _selectedPositions)
+                        {
+                            foreach (var piece in _pieces)
+                            {
+                                var piecePos = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                                if (pos.Q == piecePos.Q && pos.R == piecePos.R && piece.gameObject.activeSelf)
+                                {
+                                    takenPieces.Add(piece);
+                                }
+                            }
+                            _board.Take(pos);
+                        }
+                        _deck.DeckUpdate();
+                    };
+                    Action undo = () =>
+                    {
+                        foreach (var piece in takenPieces)
+                        {
+                            var piecePos = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                            _board.Place(piecePos, piece);
+                            piece.gameObject.SetActive(true);
+                        }
+                        card.IsPlayed = false;
+                        _deck.ReturnCard(card, cardIndex);
+                    };
+
+                    var command = new DelegateCommand(execute, undo);
+                    _commandQueue.Execute(command);
                 }
                 else if (card.Type == CardType.ShockWave)
                 {
-                    foreach (Position pos in _selectedPositions)
+                    List<PieceView> takenPieces = new List<PieceView>();
+                    List<PieceView> movedPieces = new List<PieceView>();
+                    List<Position> moveToPos = new List<Position>();
+                    _commandQueue.ReturnCommands();
+                    Action execute = () =>
                     {
-                        Position offset = HexHelper.AxialSubtract(pos, PositionHelper.WorldToHexPosition(_player.WorldPosition));
-                        Position moveTo = HexHelper.AxialAdd(pos, offset);
-
-                        if (_board.IsValidPosition(moveTo))
+                        foreach (Position pos in _selectedPositions)
                         {
-                            _board.Move(pos, moveTo);
+                            Position offset = HexHelper.AxialSubtract(pos, PositionHelper.WorldToHexPosition(_player.WorldPosition));
+                            Position moveTo = HexHelper.AxialAdd(pos, offset);
+
+                            if (_board.IsValidPosition(moveTo))
+                            {
+                                _board.Move(pos, moveTo);
+                                foreach (var piece in _pieces)
+                                {
+                                    var piecePos = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                                    if (pos.Q == piecePos.Q && pos.R == piecePos.R && piece.gameObject.activeSelf)
+                                    {
+                                        movedPieces.Add(piece);
+                                        moveToPos.Add(moveTo);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (var piece in _pieces)
+                                {
+                                    var piecePos = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                                    if (pos.Q == piecePos.Q && pos.R == piecePos.R && piece.gameObject.activeSelf)
+                                    {
+                                        takenPieces.Add(piece);
+                                    }
+                                }
+                                _board.Take(pos);
+                            }
                         }
-                        else
-                            _board.Take(pos);
-                    }
+                        _deck.DeckUpdate();
+                    };
+                    Action undo = () =>
+                    {
+                        foreach (var piece in takenPieces)
+                        {
+                            if(piece != null)
+                            {
+                                var piecePos = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                                _board.Place(piecePos, piece);
+                                piece.gameObject.SetActive(true);
+                            }
+                        }
+                        foreach (var piece in movedPieces)
+                        {
+                            if (piece != null)
+                            {
+                                var piecePos = PositionHelper.WorldToHexPosition(piece.WorldPosition);
+                                _board.Move(moveToPos[movedPieces.IndexOf(piece)], piecePos);
+                            }
+                        }
+                        card.IsPlayed = false;
+                        _deck.ReturnCard(card, cardIndex);
+                    };
+
+                    var command = new DelegateCommand(execute, undo);
+                    _commandQueue.Execute(command);
                 }
             }
         }

@@ -14,14 +14,6 @@ public class CommandQueue
 
     public void Execute(ICommand command)
     {
-        //for (int i = _commands.Count; i >= _currentCommand + 1; i--)
-        //{
-        //    if(_commands.Count > 0)
-        //    {
-        //        _commands.RemoveAt(i);
-        //    }
-        //}
-
         _commands.Add(command);
 
         while (!IsAtEnd)
@@ -54,7 +46,7 @@ public class CommandQueue
             {
                 if (_commands.Count > 0)
                 {
-                    _commands.RemoveAt(i);
+                    _commands.RemoveAt(i - 1);
                 }
             }
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 
 public class Engine
 {
@@ -10,14 +11,16 @@ public class Engine
     private Deck _deck;
     private PieceView[] _pieces;
     private BoardView _boardView;
+    private CommandQueue _commandQueue;
 
-    public Engine(Board board, BoardView boardView, PieceView player, Deck deck, PieceView[] pieces)
+    public Engine(Board board, BoardView boardView, PieceView player, Deck deck, PieceView[] pieces, CommandQueue commandQueue)
     {
         _board = board;
         _player = player;
         _deck = deck;
         _pieces = pieces;
         _boardView = boardView;
+        _commandQueue = commandQueue;
     }
 
     public void CardLogic(Position position)
@@ -29,7 +32,18 @@ public class Engine
             {
                 if (card.Type == CardType.Move)
                 {
-                    card.IsPlayed = _board.Move(PositionHelper.WorldToHexPosition(_player.WorldPosition), position);
+                    var playerPosition = PositionHelper.WorldToHexPosition(_player.WorldPosition);
+                    Action execute = () =>
+                    {
+                        card.IsPlayed = _board.Move(playerPosition, position);
+                    };
+                    Action undo = () =>
+                    {
+                        card.IsPlayed = !_board.Move(position, playerPosition);
+                    };
+
+                    var command = new DelegateCommand(execute, undo);
+                    _commandQueue.Execute(command);
                 }
                 else if (!_selectedPositions.Contains(position))
                 {

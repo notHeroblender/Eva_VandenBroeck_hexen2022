@@ -30,7 +30,20 @@ public class MoveSetCollection
         return positions;
     }
 
+    public static List<List<Position>> GetValidTilesForRadius(PositionView tile, Board board)
+    {
+        List<List<Position>> positions = new List<List<Position>>();
 
+        positions.Add(GetTileRadius(tile, board));
+
+        return positions;
+    }
+    private static List<Position> GetTileRadius(PositionView tile, Board board)
+    {
+        return new MoveSetHelper(board, tile.HexPosition)
+            .Left(1).LeftUp(1).LeftDown(1) //Left
+            .Right(1).RightUp(1).RightDown(1).CollectValidPositions(); //Right
+    }
     private static List<Position> GetTileConeRightUp(PieceView player, Board board)
     {
         return new MoveSetHelper(board, PositionHelper.WorldToHexPosition(player.WorldPosition))

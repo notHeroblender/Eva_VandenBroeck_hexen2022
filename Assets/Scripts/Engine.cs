@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Engine
 {
@@ -10,14 +12,16 @@ public class Engine
     private Deck _deck;
     private PieceView[] _pieces;
     private BoardView _boardView;
+    private PositionView _positionView;
 
-    public Engine(Board board, BoardView boardView, PieceView player, Deck deck, PieceView[] pieces)
+    public Engine(Board board, BoardView boardView, PieceView player, Deck deck, PieceView[] pieces, PositionView positionView)
     {
         _board = board;
         _player = player;
         _deck = deck;
         _pieces = pieces;
         _boardView = boardView;
+        _positionView = positionView;
     }
 
     public void CardLogic(Position position)
@@ -63,6 +67,15 @@ public class Engine
                         }
                         else
                             _board.Take(pos);
+                    }
+                }
+                else if(card.Type == CardType.Meteor)
+                {
+                    foreach (Position pos in _selectedPositions)
+                    {
+                        //card.IsPlayed = _board.Move(PositionHelper.WorldToHexPosition(_player.WorldPosition), position);
+
+                        _board.Take(pos);
                     }
                 }
             }
@@ -154,6 +167,10 @@ public class Engine
         else if (card == CardType.Slash || card == CardType.ShockWave)
         {
             return MoveSetCollection.GetValidTilesForCones(_player, _board);
+        }
+        else if (card == CardType.Meteor)
+        {
+            return MoveSetCollection.GetValidTilesForRadius(_positionView, _board);
         }
         return null;
     }

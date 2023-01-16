@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class GameLoop : MonoBehaviour
 {
-    [SerializeField]
-    private GameObject _enemy;
+    [SerializeField] private GameObject _enemy;
     private Board _board;
     private Deck _deck;
     private BoardView _boardView;
     private Engine _engine;
     private PieceView[] _pieces;
+    private PositionView _positionView;
 
 
     void Start()
@@ -45,7 +45,7 @@ public class GameLoop : MonoBehaviour
         boardView.PositionClicked += OnPositionClicked;
         _boardView = boardView;
 
-        _engine = new Engine(_board, _boardView, player, _deck, _pieces);
+        _engine = new Engine(_board, _boardView, player, _deck, _pieces, _positionView);
 
         _deck.SetupCards(_engine);
     }

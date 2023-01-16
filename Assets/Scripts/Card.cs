@@ -10,7 +10,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     private GameObject _copy;
 
     [SerializeField] private List<Position> _validPositions = new List<Position>();
-    private List<List<Position>> _validPostionGroups = new List<List<Position>>();
+    private List<List<Position>> _validPositionGroups = new List<List<Position>>();
 
     [SerializeField] private CardType _type;
     public CardType Type => _type;
@@ -23,14 +23,18 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         _copy = Instantiate(transform.gameObject, transform.parent);
 
         _validPositions = new List<Position>();
-        _validPostionGroups = new List<List<Position>>();
+        _validPositionGroups = new List<List<Position>>();
 
         if (CardType.Move == Type)
             _validPositions = GameEngine.GetValidPositions(Type);   
-        else if(CardType.Shoot == Type || CardType.Slash == Type || CardType.ShockWave == Type )
+        else if(CardType.Shoot == Type || CardType.Slash == Type || CardType.ShockWave == Type)
         {
-            _validPostionGroups = GameEngine.GetValidPositionsGroups(Type);
+            _validPositionGroups = GameEngine.GetValidPositionsGroups(Type);
             ValidGroupsToValidPositions();
+        }
+        else if(CardType.Meteor == Type)
+        {
+            _validPositionGroups = GameEngine.GetValidPositionsGroups(Type);
         }
     }
 
@@ -46,7 +50,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         {
             PositionView positionView = hit.transform.gameObject.GetComponent<PositionView>();
 
-            GameEngine.SetHighlights(positionView.HexPosition, Type, _validPositions, _validPostionGroups);
+            GameEngine.SetHighlights(positionView.HexPosition, Type, _validPositions, _validPositionGroups);
         }
         else
             GameEngine.SetActiveTiles(new List<Position>());
@@ -73,7 +77,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
 
     private void ValidGroupsToValidPositions()
     {
-        foreach (List<Position> positions in _validPostionGroups)
+        foreach (List<Position> positions in _validPositionGroups)
         {
             foreach (Position position in positions)
             {

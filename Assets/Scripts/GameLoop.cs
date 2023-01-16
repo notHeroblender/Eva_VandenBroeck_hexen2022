@@ -13,6 +13,7 @@ public class GameLoop : MonoBehaviour
 
     void Start()
     {
+
         SpawnHelper.SpawnEnemies(_enemy, 8);
 
         _deck = FindObjectOfType<Deck>();

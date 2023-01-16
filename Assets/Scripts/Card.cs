@@ -35,6 +35,7 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
             _validPositionGroups = GameEngine.GetValidPositionsGroups(Type);
             _validPositionGroups.Add(GameEngine.GetValidPositions(Type));
             ValidGroupsToValidPositions();
+            //_validPositions = GameEngine.GetValidPositions(Type);
         }
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameLoop : MonoBehaviour
@@ -8,6 +9,7 @@ public class GameLoop : MonoBehaviour
     private BoardView _boardView;
     private Engine _engine;
     private PieceView[] _pieces;
+    private PositionView[] _positionViews;
     private PositionView _positionView;
     [SerializeField] private Canvas _canvas;
 
@@ -43,7 +45,7 @@ public class GameLoop : MonoBehaviour
             break;
          }
         _pieces = piecesViews;
-        
+
         var boardView = FindObjectOfType<BoardView>();
         boardView.PositionClicked += OnPositionClicked;
         _boardView = boardView;

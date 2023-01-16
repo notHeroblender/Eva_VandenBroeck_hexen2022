@@ -16,8 +16,6 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
     public CardType Type => _type;
     public bool IsPlayed = false;
 
-
-    //when holding a card, make a copy of it and move that to where the mouse is
     public void OnBeginDrag(PointerEventData eventData)
     {
         _copy = Instantiate(transform.gameObject, transform.parent);
@@ -43,10 +41,12 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         _copy.transform.position = eventData.position;
 
         RaycastHit hit;
-
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (CardType.Meteor == Type)
+        {
 
-        if (Physics.Raycast(ray, out hit, 100) && hit.collider.tag == "Tile")
+        }
+        else if (Physics.Raycast(ray, out hit, 100) && hit.collider.tag == "Tile")
         {
             PositionView positionView = hit.transform.gameObject.GetComponent<PositionView>();
 

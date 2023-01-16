@@ -1,23 +1,25 @@
 using System;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public static class Loader
 {
+    private static Action onLoaderCallback;
     public enum State
     {
         HexenGame, Menu
     }
 
-    private static Action onLoaderCallback;
-
-    public static void Load(Scene scene)
+    public static void CanvasActivateDeactivate(Canvas activate, Canvas deactivate)
     {
         onLoaderCallback = () =>
         {
         };
-        SceneManager.LoadScene(scene.ToString());
 
+        activate.gameObject.SetActive(false);
+        deactivate.gameObject.SetActive(true);
     }
 
     public static void LoaderCallback()

@@ -73,8 +73,6 @@ public class Engine
                 {
                     foreach (Position pos in _selectedPositions)
                     {
-                        //card.IsPlayed = _board.Move(PositionHelper.WorldToHexPosition(_player.WorldPosition), position);
-
                         _board.Take(pos);
                     }
                 }
@@ -100,6 +98,7 @@ public class Engine
             case CardType.Shoot:
             case CardType.Slash:
             case CardType.ShockWave:
+            case CardType.Meteor:
                 if (!validPositions.Contains(position))
                 {
                     SetActiveTiles(validPositions);
@@ -110,7 +109,10 @@ public class Engine
                     {
                         if (positions.Count == 0) continue;
 
-                        if ((type == CardType.Shoot && positions.Contains(position)) || (type == CardType.Slash && positions[0] == position) || (type == CardType.ShockWave && positions[0] == position))
+                        if ((type == CardType.Shoot && positions.Contains(position)) || 
+                            (type == CardType.Slash && positions[0] == position) || 
+                            (type == CardType.ShockWave && positions[0] == position) ||
+                            (type == CardType.Meteor && positions[0] == position))
                         {
                             SetActiveTiles(positions);
                             _selectedPositions = positions;

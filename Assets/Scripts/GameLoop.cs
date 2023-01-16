@@ -9,10 +9,12 @@ public class GameLoop : MonoBehaviour
     private Engine _engine;
     private PieceView[] _pieces;
     private PositionView _positionView;
+    [SerializeField] private Canvas _canvas;
 
 
     void Start()
     {
+        _canvas.gameObject.SetActive(false);
 
         SpawnHelper.SpawnEnemies(_enemy, 8);
 
@@ -48,11 +50,21 @@ public class GameLoop : MonoBehaviour
 
         _engine = new Engine(_board, _boardView, player, _deck, _pieces, _positionView);
 
-        _deck.SetupCards(_engine);
+        if(StartGame())
+            _deck.SetupCards(_engine);
     }
 
     private void OnPositionClicked(object sender, PositionEventArgs e)
     {
         _engine.CardLogic(e.Position);
+    }
+    public bool StartGame()
+    {
+        if (_canvas.gameObject.activeSelf == true)
+        {
+            return true;
+        }
+        else
+            return false;
     }
 }

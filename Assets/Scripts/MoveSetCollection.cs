@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine.UIElements;
 
 public class MoveSetCollection 
 {
@@ -42,7 +43,8 @@ public class MoveSetCollection
     {
         return new MoveSetHelper(board, tile.HexPosition)
             .Left(1).LeftUp(1).LeftDown(1) //Left
-            .Right(1).RightUp(1).RightDown(1).CollectValidPositions(); //Right
+            .Right(1).RightUp(1).RightDown(1)
+            .CollectValidPositions(); //Right
     }
     private static List<Position> GetTileConeRightUp(PieceView player, Board board)
     {

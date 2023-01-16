@@ -33,6 +33,8 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
         else if(CardType.Meteor == Type)
         {
             _validPositionGroups = GameEngine.GetValidPositionsGroups(Type);
+            _validPositionGroups.Add(GameEngine.GetValidPositions(Type));
+            ValidGroupsToValidPositions();
         }
     }
 
@@ -42,11 +44,8 @@ public class Card : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHand
 
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (CardType.Meteor == Type)
-        {
 
-        }
-        else if (Physics.Raycast(ray, out hit, 100) && hit.collider.tag == "Tile")
+        if (Physics.Raycast(ray, out hit, 100) && hit.collider.tag == "Tile")
         {
             PositionView positionView = hit.transform.gameObject.GetComponent<PositionView>();
 
